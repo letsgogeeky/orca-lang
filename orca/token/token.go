@@ -24,6 +24,7 @@ const (
 	MINUS    = "-"
 	ASTERISK = "*"
 	SLASH    = "/"
+	POW      = "^"
 	BANG     = "!"
 
 	LT = "<"
@@ -31,6 +32,9 @@ const (
 
 	EQ     = "=="
 	NOT_EQ = "!="
+
+	LT_EQ = "<="
+	GT_EQ = ">="
 
 	// Delimiters
 	COMMA     = ","
@@ -50,11 +54,21 @@ const (
 	IF       = "IF"
 	ELSE     = "ELSE"
 	RETURN   = "RETURN"
+	BREACH   = "BREACH" // try .. (Exception handling)
+	CATCH    = "CATCH"
 )
 
 var keywords = map[string]TokenType{
-	"fn":  FUNCTION,
-	"let": LET,
+	"fn":      FUNCTION,
+	"let":     LET,
+	"if":      IF,
+	"else":    ELSE,
+	"true":    TRUE,
+	"false":   FALSE,
+	"return":  RETURN,
+	"whistle": FUNCTION,
+	"breach":  BREACH,
+	"catch":   CATCH,
 }
 
 func LookupIdent(iden string) TokenType {

@@ -31,13 +31,49 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 }
 
+func (l *Lexer) getOperator() token.Token {
+	var t token.Token
+	ch := l.currChar
+	switch ch {
+	case '=':
+		if l.peekChar() == '=' {
+			l.readChar()
+			literal := string(ch) + string(l.currChar)
+			return token.Token{Type: token.EQ, Literal: literal}
+		}
+		t = newToken(token.ASSIGN, ch)
+	case '!':
+		if l.peekChar() == '=' {
+			l.readChar()
+			literal := string(ch) + string(l.currChar)
+			return token.Token{Type: token.NOT_EQ, Literal: literal}
+		}
+		t = newToken(token.BANG, ch)
+	case '>':
+		if l.peekChar() == '=' {
+			l.readChar()
+			literal := string(ch) + string(l.currChar)
+			return token.Token{Type: token.GT_EQ, Literal: literal}
+		}
+		t = newToken(token.GT, ch)
+	case '<':
+		if l.peekChar() == '=' {
+			l.readChar()
+			literal := string(ch) + string(l.currChar)
+			return token.Token{Type: token.LT_EQ, Literal: literal}
+		}
+		t = newToken(token.LT, ch)
+	}
+	return t
+}
+
 func (l *Lexer) NextToken() token.Token {
 	var t token.Token
 
 	l.consumeWhiteSpace()
 	switch l.currChar {
-	case '=':
-		t = newToken(token.ASSIGN, l.currChar)
+	case '=', '!', '<', '>':
+		t = l.getOperator()
 	case '+':
 		t = newToken(token.PLUS, l.currChar)
 	case '-':
@@ -46,6 +82,8 @@ func (l *Lexer) NextToken() token.Token {
 		t = newToken(token.SLASH, l.currChar)
 	case '*':
 		t = newToken(token.ASTERISK, l.currChar)
+	case '^':
+		t = newToken(token.POW, l.currChar)
 	case '(':
 		t = newToken(token.L_PAREN, l.currChar)
 	case ')':
@@ -103,6 +141,13 @@ func (l *Lexer) readInt() string {
 		l.readChar()
 	}
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) peekChar() byte {
+	if l.readPosition >= l.inputLen {
+		return 0
+	}
+	return l.input[l.readPosition]
 }
 
 func isLetter(ch byte) bool {
