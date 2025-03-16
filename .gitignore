@@ -1,0 +1,6 @@
+# go
+*.out
+*.test
+
+# qemu
+*.qcow2

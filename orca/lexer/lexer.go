@@ -34,6 +34,7 @@ func (l *Lexer) readChar() {
 func (l *Lexer) NextToken() token.Token {
 	var t token.Token
 
+	l.consumeWhiteSpace()
 	switch l.currChar {
 	case '=':
 		t = newToken(token.ASSIGN, l.currChar)
@@ -60,6 +61,18 @@ func (l *Lexer) NextToken() token.Token {
 	case 0:
 		t.Literal = ""
 		t.Type = token.EOF
+	default:
+		if isLetter(l.currChar) {
+			t.Literal = l.readIdentifier()
+			t.Type = token.LookupIdent(t.Literal)
+			return t
+		}
+		if isDigit(l.currChar) {
+			t.Literal = l.readInt()
+			t.Type = token.INT
+			return t
+		}
+		t = newToken(token.ILLEGAL, l.currChar)
 	}
 	l.readChar()
 	return t
@@ -68,4 +81,36 @@ func (l *Lexer) NextToken() token.Token {
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	// TODO: support multitype literals
 	return token.Token{Type: tokenType, Literal: string(ch)}
+}
+
+func (l *Lexer) consumeWhiteSpace() {
+	for l.currChar == ' ' || l.currChar == '\t' || l.currChar == '\n' || l.currChar == '\r' {
+		l.readChar()
+	}
+}
+
+func (l *Lexer) readIdentifier() string {
+	position := l.position
+	for isLetter(l.currChar) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
+func (l *Lexer) readInt() string {
+	position := l.position
+	for isDigit(l.currChar) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
+func isLetter(ch byte) bool {
+	// Extend this function to define and support different ways
+	// for identifiers and values
+	return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '_'
+}
+
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
 }

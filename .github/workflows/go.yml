@@ -1,0 +1,32 @@
+name: Orca
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                go-version: [ '1.24.x' ]
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: ${{ matrix.go-version }}
+            
+            # - name: Install dependencies
+            #   working-directory: ./orca
+            #   run: go get .
+            
+            - name: Test Lexer
+              working-directory: ./orca
+              run: go test -v ./lexer
