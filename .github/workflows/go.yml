@@ -30,3 +30,7 @@ jobs:
             - name: Test Lexer
               working-directory: ./orca
               run: go test -v ./lexer
+
+            - name: Test Parser
+              working-directory: ./orca
+              run: go test -v ./parser
